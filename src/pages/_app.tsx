@@ -8,13 +8,19 @@ import "../styles/globals.css";
 import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
 import { loggerLink } from "@trpc/client/links/loggerLink";
 import { url } from "../constants";
-
+import { trpc } from "../utils/trpc";
+import { UserContextProvider } from "../context/user.context";
 function MyApp({ Component, pageProps }: AppProps) {
+  const { data, error, isLoading } = trpc.useQuery(["users.me"]);
+  if (isLoading) {
+    return <div>Loading user...</div>;
+  }
   return (
-    // <UserContextProvider value={data}>
-    <main>
-      <Component {...pageProps} />
-    </main>
+    <UserContextProvider value={data}>
+      <main>
+        <Component {...pageProps} />
+      </main>
+    </UserContextProvider>
   );
 }
 

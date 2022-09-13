@@ -8,13 +8,13 @@ import {
 } from "../../schema/user.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import * as trpc from "@trpc/server";
-import { isError } from "react-query";
 import { baseUrl } from "../../constants";
 import { encode, decode } from "../../utils/base64";
 import { sendLoginEmail } from "../../utils/mailer";
 import { createNextApiHandler } from "@trpc/server/adapters/next";
 import { signJwt } from "../../utils/jwt";
 import { serialize } from "cookie";
+
 export const userRouter = createRouter()
   .mutation("register-user", {
     input: createUserSchema,
@@ -116,5 +116,10 @@ export const userRouter = createRouter()
       return {
         redirect: token.redirect,
       };
+    },
+  })
+  .query("me", {
+    resolve({ ctx }) {
+      return ctx.user;
     },
   });

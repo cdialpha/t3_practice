@@ -32,7 +32,7 @@ const LoginForm = () => {
   });
 
   const onSubmit = (values: CreateUserInput) => {
-    mutate(values);
+    mutate({ ...values, redirect: router.asPath });
   };
 
   const hash = router.asPath.split("#token=")[1];
