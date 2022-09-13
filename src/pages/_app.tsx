@@ -1,55 +1,47 @@
-// src/pages/_app.tsx
 import { withTRPC } from "@trpc/next";
-import type { AppRouter } from "../server/router/app.router";
-import type { AppType } from "next/dist/shared/lib/utils";
+import type { AppRouter } from "../server/route/app.router";
+// import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
-import { SessionProvider } from "next-auth/react";
+// import { SessionProvider } from "next-auth/react";
+import type { AppProps } from "next/app";
 import "../styles/globals.css";
-import {httpBatchLink } from '@trpc/client/links/httpBatchLink'
-import { loggerLink } from '@trpc/client/links/loggerLink'
-const MyApp: AppType = ({
-  Component,
-  pageProps: { session, ...pageProps },
-}) => {
-  return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
-    </SessionProvider>
-  );
-};
+import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
+import { loggerLink } from "@trpc/client/links/loggerLink";
+import { url } from "../constants";
 
-const getBaseUrl = () => {
-  if (typeof window !== "undefined") return ""; // browser should use relative url
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
-  return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
-};
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    // <UserContextProvider value={data}>
+    <main>
+      <Component {...pageProps} />
+    </main>
+  );
+}
 
 export default withTRPC<AppRouter>({
-  config({ctx}) {
-    const url = `${getBaseUrl()}/api/trpc`;
+  config({ ctx }) {
     const links = [
       loggerLink(),
       httpBatchLink({
         maxBatchSize: 10,
-        url
-      })
-    ]
+        url,
+      }),
+    ];
 
     return {
-      
       queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
       headers() {
-        if(ctx?.req) {
+        if (ctx?.req) {
           return {
-          ...ctx.req.headers,
-          'x-ssr': '1',
-          }
+            ...ctx.req.headers,
+            "x-ssr": "1",
+          };
         }
-        return {}
+        return {};
       },
-  links,
-  transformer: superjson,
-};
-},
-ssr: false,
+      links,
+      transformer: superjson,
+    };
+  },
+  ssr: false,
 })(MyApp);

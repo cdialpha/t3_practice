@@ -1,25 +1,27 @@
 // src/server/router/context.ts
-import * as trpc from "@trpc/server";
-import * as trpcNext from "@trpc/server/adapters/next";
 import { NextApiRequest, NextApiResponse } from "next";
-import {
-  Session,
-  unstable_getServerSession as getServerSession,
-} from "next-auth";
-import { authOptions as nextAuthOptions } from "../pages/api/auth/[...nextauth]";
-import { prisma } from "./db/client";
+import { prisma } from "../utils/prisma";
 
 export function createContext({
   req,
   res,
-}:{
-  req: NextApiRequest,
-  res: NextApiResponse,
+}: {
+  req: NextApiRequest;
+  res: NextApiResponse;
 }) {
-  return {req, res} 
+  return { req, res, prisma };
 }
 
-export type Context = ReturnType<typeof createContext>
+export type Context = ReturnType<typeof createContext>;
+
+// import {
+//   Session,
+//   unstable_getServerSession as getServerSession,
+// } from "next-auth";
+// import { authOptions as nextAuthOptions } from "../pages/api/auth/[...nextauth]";
+// import { prisma } from "./db/client";
+// import * as trpc from "@trpc/server";
+// import * as trpcNext from "@trpc/server/adapters/next";
 
 // type CreateContextOptions = {
 //   session: Session | null;
@@ -53,4 +55,3 @@ export type Context = ReturnType<typeof createContext>
 // type Context = trpc.inferAsyncReturnType<typeof createContext>;
 
 // export const createRouter = () => trpc.router<Context>();
-
